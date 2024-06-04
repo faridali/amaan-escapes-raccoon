@@ -29,62 +29,72 @@
             height: 50px;
             position: absolute;
         }
-        #amaan {
-            cursor: pointer;
-        }
         #timer {
             font-size: 24px;
             margin-bottom: 20px;
+        }
+        #speedInput {
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
     <h1>Run from the Raccoon!</h1>
+    <div id="instructions">Use arrow keys to move Amaan and avoid the raccoon for 15 seconds!</div>
+    <div>
+        <label for="speed">Select Raccoon Speed:</label>
+        <input type="number" id="speedInput" min="1" max="20" value="8">
+        <button id="startButton">Start Game</button>
+    </div>
     <div id="timer">Time left: 15s</div>
     <div id="gameBox">
         <img src="amaan.png" id="amaan" class="character" alt="Amaan">
         <img src="raccoon.png" id="raccoon" class="character" alt="Raccoon">
     </div>
     <div id="message"></div>
+    <div id="score">Points: 0</div>
     <script>
         const gameBox = document.getElementById('gameBox');
         const amaan = document.getElementById('amaan');
         const raccoon = document.getElementById('raccoon');
         const timer = document.getElementById('timer');
         const message = document.getElementById('message');
+        const scoreDisplay = document.getElementById('score');
+        const speedInput = document.getElementById('speedInput');
+        const startButton = document.getElementById('startButton');
 
-        let isDragging = false;
-        let offsetX, offsetY;
         let timeLeft = 15;
-        let gameRunning = true;
+        let gameRunning = false;
+        let raccoonSpeed = 8;
+        let score = 0;
 
         amaan.style.left = '375px';
         amaan.style.top = '275px';
         raccoon.style.left = '0px';
         raccoon.style.top = '0px';
 
-        amaan.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            offsetX = e.offsetX;
-            offsetY = e.offsetY;
-        });
+        let amaanX = parseInt(amaan.style.left);
+        let amaanY = parseInt(amaan.style.top);
 
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                const rect = gameBox.getBoundingClientRect();
-                let x = e.clientX - rect.left - offsetX;
-                let y = e.clientY - rect.top - offsetY;
-                if (x < 0) x = 0;
-                if (y < 0) y = 0;
-                if (x > rect.width - amaan.clientWidth) x = rect.width - amaan.clientWidth;
-                if (y > rect.height - amaan.clientHeight) y = rect.height - amaan.clientHeight;
-                amaan.style.left = x + 'px';
-                amaan.style.top = y + 'px';
+        document.addEventListener('keydown', (e) => {
+            if (!gameRunning) return;
+            const rect = gameBox.getBoundingClientRect();
+            switch (e.key) {
+                case 'ArrowUp':
+                    if (amaanY > 0) amaanY -= 10;
+                    break;
+                case 'ArrowDown':
+                    if (amaanY < rect.height - amaan.clientHeight) amaanY += 10;
+                    break;
+                case 'ArrowLeft':
+                    if (amaanX > 0) amaanX -= 10;
+                    break;
+                case 'ArrowRight':
+                    if (amaanX < rect.width - amaan.clientWidth) amaanX += 10;
+                    break;
             }
+            amaan.style.left = amaanX + 'px';
+            amaan.style.top = amaanY + 'px';
         });
 
         function moveRaccoon() {
@@ -103,9 +113,8 @@
                 return;
             }
 
-            const speed = 4;
-            raccoon.style.left = raccoon.offsetLeft + (dx / distance) * speed + 'px';
-            raccoon.style.top = raccoon.offsetTop + (dy / distance) * speed + 'px';
+            raccoon.style.left = raccoon.offsetLeft + (dx / distance) * raccoonSpeed + 'px';
+            raccoon.style.top = raccoon.offsetTop + (dy / distance) * raccoonSpeed + 'px';
         }
 
         function updateTimer() {
@@ -116,16 +125,35 @@
             if (timeLeft <= 0) {
                 clearInterval(raccoonInterval);
                 gameRunning = false;
+                score = raccoonSpeed * 10;
                 message.textContent = 'You survived!';
+                scoreDisplay.textContent = `Points: ${score}`;
             }
         }
 
-        let raccoonInterval = setInterval(moveRaccoon, 20);
-        let countdownInterval = setInterval(updateTimer, 1000);
+        function startGame() {
+            timeLeft = 15;
+            gameRunning = true;
+            raccoonSpeed = parseInt(speedInput.value);
+            timer.textContent = `Time left: 15s`;
+            message.textContent = '';
+            scoreDisplay.textContent = 'Points: 0';
+            amaan.style.left = '375px';
+            amaan.style.top = '275px';
+            raccoon.style.left = '0px';
+            raccoon.style.top = '0px';
+            amaanX = parseInt(amaan.style.left);
+            amaanY = parseInt(amaan.style.top);
 
-        setTimeout(() => {
-            clearInterval(countdownInterval);
-        }, 15000);
+            raccoonInterval = setInterval(moveRaccoon, 20);
+            countdownInterval = setInterval(updateTimer, 1000);
+
+            setTimeout(() => {
+                clearInterval(countdownInterval);
+            }, 15000);
+        }
+
+        startButton.addEventListener('click', startGame);
     </script>
 </body>
 </html>
