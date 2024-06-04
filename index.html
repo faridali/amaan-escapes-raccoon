@@ -40,7 +40,7 @@
 </head>
 <body>
     <h1>Run from the Raccoon!</h1>
-    <div id="instructions">Use arrow keys to move Amaan and avoid the raccoon for 15 seconds!</div>
+    <div id="instructions">Use arrow keys to move Amaan and WASD keys to control the raccoon. Survive for 15 seconds!</div>
     <div>
         <label for="speed">Select Raccoon Speed:</label>
         <input type="number" id="speedInput" min="1" max="20" value="8">
@@ -75,6 +75,8 @@
 
         let amaanX = parseInt(amaan.style.left);
         let amaanY = parseInt(amaan.style.top);
+        let raccoonX = parseInt(raccoon.style.left);
+        let raccoonY = parseInt(raccoon.style.top);
 
         document.addEventListener('keydown', (e) => {
             if (!gameRunning) return;
@@ -92,9 +94,23 @@
                 case 'ArrowRight':
                     if (amaanX < rect.width - amaan.clientWidth) amaanX += 10;
                     break;
+                case 'w':
+                    if (raccoonY > 0) raccoonY -= 10;
+                    break;
+                case 's':
+                    if (raccoonY < rect.height - raccoon.clientHeight) raccoonY += 10;
+                    break;
+                case 'a':
+                    if (raccoonX > 0) raccoonX -= 10;
+                    break;
+                case 'd':
+                    if (raccoonX < rect.width - raccoon.clientWidth) raccoonX += 10;
+                    break;
             }
             amaan.style.left = amaanX + 'px';
             amaan.style.top = amaanY + 'px';
+            raccoon.style.left = raccoonX + 'px';
+            raccoon.style.top = raccoonY + 'px';
         });
 
         function moveRaccoon() {
@@ -113,8 +129,10 @@
                 return;
             }
 
-            raccoon.style.left = raccoon.offsetLeft + (dx / distance) * raccoonSpeed + 'px';
-            raccoon.style.top = raccoon.offsetTop + (dy / distance) * raccoonSpeed + 'px';
+            raccoonX = raccoon.offsetLeft + (dx / distance) * raccoonSpeed;
+            raccoonY = raccoon.offsetTop + (dy / distance) * raccoonSpeed;
+            raccoon.style.left = raccoonX + 'px';
+            raccoon.style.top = raccoonY + 'px';
         }
 
         function updateTimer() {
@@ -144,6 +162,8 @@
             raccoon.style.top = '0px';
             amaanX = parseInt(amaan.style.left);
             amaanY = parseInt(amaan.style.top);
+            raccoonX = parseInt(raccoon.style.left);
+            raccoonY = parseInt(raccoon.style.top);
 
             raccoonInterval = setInterval(moveRaccoon, 20);
             countdownInterval = setInterval(updateTimer, 1000);
