@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>amaaan escapes raccoon</title>
+    <title>Amaan Escapes Raccoon</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,8 +17,8 @@
             color: white;
         }
         #gameBox {
-            width: 800px;
-            height: 600px;
+            width: 80vw;
+            height: 60vh;
             border: 2px solid black;
             position: relative;
             overflow: hidden;
@@ -39,7 +39,7 @@
     </style>
 </head>
 <body>
-    <h1>Run from the Raccoon!</h1>
+    <h1>Amaan Escapes Raccoon</h1>
     <div id="instructions">Drag the raccoon to chase Amaan. Amaan's speed can be set below. Catch Amaan as fast as you can!</div>
     <div>
         <label for="speed">Select Amaan's Speed:</label>
@@ -83,6 +83,10 @@
         document.addEventListener('mouseup', stopDrag);
         document.addEventListener('mousemove', drag);
 
+        raccoon.addEventListener('touchstart', startDrag);
+        document.addEventListener('touchend', stopDrag);
+        document.addEventListener('touchmove', drag);
+
         let isDragging = false;
 
         function startDrag(e) {
@@ -95,9 +99,13 @@
 
         function drag(e) {
             if (isDragging) {
+                e.preventDefault();
                 const rect = gameBox.getBoundingClientRect();
-                raccoonX = e.clientX - rect.left - raccoon.clientWidth / 2;
-                raccoonY = e.clientY - rect.top - raccoon.clientHeight / 2;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                raccoonX = clientX - rect.left - raccoon.clientWidth / 2;
+                raccoonY = clientY - rect.top - raccoon.clientHeight / 2;
 
                 if (raccoonX < 0) raccoonX = 0;
                 if (raccoonY < 0) raccoonY = 0;
