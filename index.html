@@ -3,18 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amaan Tries to Escape the Raccoon</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Run from the Raccoon</title>
+    <style>
+        #gameBox {
+            width: 800px;
+            height: 600px;
+            border: 2px solid black;
+            position: relative;
+            overflow: hidden;
+        }
+        .character {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+        }
+        #amaan {
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <h1>Amaan Tries to Escape the Raccoon</h1>
-    <div id="game-container">
-        <div id="timer">10</div>
-        <div id="maze">
-            <img src="amaan.png" id="amaan" draggable="true">
-            <img src="raccoon.png" id="raccoon">
-        </div>
+    <h1>Run from the Raccoon!</h1>
+    <div id="gameBox">
+        <img src="amaan.png" id="amaan" class="character" alt="Amaan">
+        <img src="raccoon.png" id="raccoon" class="character" alt="Raccoon">
     </div>
-    <script src="script.js"></script>
+    <div id="message"></div>
+    <script>
+        const gameBox = document.getElementById('gameBox');
+        const amaan = document.getElementById('amaan');
+        const raccoon = document.getElementById('raccoon');
+        const message = document.getElementById('message');
+
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        amaan.style.left = '375px';
+        amaan.style.top = '275px';
+        raccoon.style.left = '0px';
+        raccoon.style.top = '0px';
+
+        amaan.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offsetX = e.offsetX;
+            offsetY = e.offsetY;
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const rect = gameBox.getBoundingClientRect();
+                let x = e.clientX - rect.left - offsetX;
+                let y = e.clientY - rect.top - offsetY;
+                if (x < 0) x = 0;
+                if (y < 0) y = 0;
+                if (x > rect.width - amaan.clientWidth) x = rect.width - amaan.clientWidth;
+                if (y > rect.height - amaan.clientHeight) y = rect.height - amaan.clientHeight;
+                amaan.style.left = x + 'px';
+                amaan.style.top = y + 'px';
+            }
+        });
+
+        function moveRaccoon() {
+            const amaanRect = amaan.getBoundingClientRect();
+            const raccoonRect = raccoon.getBoundingClientRect();
+            const dx = amaanRect.left - raccoonRect.left;
+            const dy = amaanRect.top - raccoonRect.top;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 1) {
+                message.textContent = 'Caught!';
+                clearInterval(raccoonInterval);
+                return;
+            }
+
+            const speed = 2;
+            raccoon.style.left = raccoon.offsetLeft + (dx / distance) * speed + 'px';
+            raccoon.style.top = raccoon.offsetTop + (dy / distance) * speed + 'px';
+        }
+
+        let raccoonInterval = setInterval(moveRaccoon, 20);
+
+        setTimeout(() => {
+            clearInterval(raccoonInterval);
+            if (message.textContent !== 'Caught!') {
+                message.textContent = 'You survived!';
+            }
+        }, 15000);
+    </script>
 </body>
 </html>
