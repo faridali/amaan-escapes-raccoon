@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Run from the Raccoon</title>
+    <title>racoon chases human raccoon</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -40,7 +40,7 @@
 </head>
 <body>
     <h1>Run from the Raccoon!</h1>
-    <div id="instructions">Use WASD keys to control the raccoon and chase Amaan. Amaan's speed can be set below. Survive for 15 seconds!</div>
+    <div id="instructions">Use WASD keys to control the raccoon and chase Amaan. Amaan's speed can be set below. Catch Amaan within 15 seconds!</div>
     <div>
         <label for="speed">Select Amaan's Speed:</label>
         <input type="number" id="speedInput" min="1" max="20" value="8">
@@ -83,16 +83,16 @@
             const rect = gameBox.getBoundingClientRect();
             switch (e.key) {
                 case 'w':
-                    if (raccoonY > 0) raccoonY -= 10;
+                    if (raccoonY > 0) raccoonY -= 20;
                     break;
                 case 's':
-                    if (raccoonY < rect.height - raccoon.clientHeight) raccoonY += 10;
+                    if (raccoonY < rect.height - raccoon.clientHeight) raccoonY += 20;
                     break;
                 case 'a':
-                    if (raccoonX > 0) raccoonX -= 10;
+                    if (raccoonX > 0) raccoonX -= 20;
                     break;
                 case 'd':
-                    if (raccoonX < rect.width - raccoon.clientWidth) raccoonX += 10;
+                    if (raccoonX < rect.width - raccoon.clientWidth) raccoonX += 20;
                     break;
             }
             raccoon.style.left = raccoonX + 'px';
@@ -135,9 +135,8 @@
             if (timeLeft <= 0) {
                 clearInterval(amaanInterval);
                 gameRunning = false;
-                score = amaanSpeed * 10;
-                message.textContent = 'You survived!';
-                scoreDisplay.textContent = `Points: ${score}`;
+                message.textContent = 'You lost! Amaan escaped!';
+                scoreDisplay.textContent = `Points: 0`;
             }
         }
 
