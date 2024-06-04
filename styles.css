@@ -1,0 +1,45 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    text-align: center;
+}
+
+h1 {
+    color: #4CAF50;
+    margin-top: 20px;
+}
+
+#game-container {
+    position: relative;
+    display: inline-block;
+    margin-top: 50px;
+}
+
+#timer {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+#maze {
+    width: 400px;
+    height: 400px;
+    border: 2px solid #4CAF50;
+    position: relative;
+    background-color: #fff;
+}
+
+#amaan {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+}
+
+#raccoon {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    transition: top 0.5s linear, left 0.5s linear;
+}
