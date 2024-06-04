@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>racoon chases human raccoon</title>
+    <title>Run from the Raccoon</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -40,7 +40,7 @@
 </head>
 <body>
     <h1>Run from the Raccoon!</h1>
-    <div id="instructions">Use WASD keys to control the raccoon and chase Amaan. Amaan's speed can be set below. Catch Amaan within 15 seconds!</div>
+    <div id="instructions">Use WASD keys to control the raccoon and chase Amaan. Amaan's speed can be set below. Catch Amaan as fast as you can!</div>
     <div>
         <label for="speed">Select Amaan's Speed:</label>
         <input type="number" id="speedInput" min="1" max="20" value="8">
@@ -67,6 +67,7 @@
         let gameRunning = false;
         let amaanSpeed = 8;
         let score = 0;
+        let timeTaken = 0;
 
         amaan.style.left = '375px';
         amaan.style.top = '275px';
@@ -83,16 +84,16 @@
             const rect = gameBox.getBoundingClientRect();
             switch (e.key) {
                 case 'w':
-                    if (raccoonY > 0) raccoonY -= 20;
+                    if (raccoonY > 0) raccoonY -= 10;
                     break;
                 case 's':
-                    if (raccoonY < rect.height - raccoon.clientHeight) raccoonY += 20;
+                    if (raccoonY < rect.height - raccoon.clientHeight) raccoonY += 10;
                     break;
                 case 'a':
-                    if (raccoonX > 0) raccoonX -= 20;
+                    if (raccoonX > 0) raccoonX -= 10;
                     break;
                 case 'd':
-                    if (raccoonX < rect.width - raccoon.clientWidth) raccoonX += 20;
+                    if (raccoonX < rect.width - raccoon.clientWidth) raccoonX += 10;
                     break;
             }
             raccoon.style.left = raccoonX + 'px';
@@ -109,9 +110,13 @@
             const distance = Math.sqrt(dx * dx + dy * dy);
 
             if (distance < 1) {
-                message.textContent = 'Caught!';
-                clearInterval(amaanInterval);
                 gameRunning = false;
+                clearInterval(amaanInterval);
+                clearInterval(timerInterval);
+                message.textContent = 'Caught!';
+                timeTaken = 15 - timeLeft;
+                score = Math.max(0, (15 - timeTaken) * amaanSpeed * 10);
+                scoreDisplay.textContent = `Points: ${score}`;
                 return;
             }
 
@@ -133,8 +138,8 @@
             timeLeft--;
             timer.textContent = `Time left: ${timeLeft}s`;
             if (timeLeft <= 0) {
-                clearInterval(amaanInterval);
                 gameRunning = false;
+                clearInterval(amaanInterval);
                 message.textContent = 'You lost! Amaan escaped!';
                 scoreDisplay.textContent = `Points: 0`;
             }
@@ -157,11 +162,7 @@
             raccoonY = parseInt(raccoon.style.top);
 
             amaanInterval = setInterval(moveAmaan, 20);
-            countdownInterval = setInterval(updateTimer, 1000);
-
-            setTimeout(() => {
-                clearInterval(countdownInterval);
-            }, 15000);
+            timerInterval = setInterval(updateTimer, 1000);
         }
 
         startButton.addEventListener('click', startGame);
