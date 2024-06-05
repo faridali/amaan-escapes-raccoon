@@ -7,14 +7,16 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #FFE4B5;
+            background-color: #FFE4B5;  /* Background color */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
-            color: black;
+            color: black;  /* Text color */
+            overflow: hidden;  /* Prevent scrolling */
+            touch-action: none;  /* Prevent default touch actions */
         }
         #gameContainer {
             display: flex;
@@ -26,16 +28,18 @@
             border: 2px solid black;
             position: relative;
             overflow: hidden;
-            background-color: white;
+            background-color: white;  /* Background color */
         }
         .character {
             width: 50px;
             height: 50px;
             position: absolute;
         }
-        #timer, #highScore, #score {
-            font-size: 24px;
-            margin-bottom: 10px;
+        h1 {
+            color: black;  /* Text color for the header */
+        }
+        #instructions, #timer, #highScore, #score, #message {
+            color: black;  /* Text color for the instructions, timer, high score, score, and message */
         }
         #leaderboard {
             margin-left: 20px;
@@ -44,9 +48,11 @@
         #leaderboard h2 {
             margin: 0;
             margin-bottom: 10px;
+            color: black;  /* Text color for the leaderboard header */
         }
         #leaderboard ol {
             padding-left: 20px;
+            color: black;  /* Text color for the leaderboard list */
         }
     </style>
 </head>
@@ -84,7 +90,7 @@
 
         let timeLeft = 15000;
         let gameRunning = false;
-        const amaanSpeed = 3000;
+        const amaanSpeed = 3000;  // Change this value to adjust Amaan's speed
         let score = 0;
         let playerName = '';
 
