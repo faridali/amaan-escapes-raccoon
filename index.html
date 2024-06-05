@@ -7,14 +7,18 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: purple;
+            background-color: #FFE4B5;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
-            color: white;
+            color: black;
+        }
+        #gameContainer {
+            display: flex;
+            align-items: flex-start;
         }
         #gameBox {
             width: 80vw;
@@ -33,25 +37,38 @@
             font-size: 24px;
             margin-bottom: 10px;
         }
-        #gheeInput {
-            margin: 10px 0;
+        #leaderboard {
+            margin-left: 20px;
+            text-align: left;
+        }
+        #leaderboard h2 {
+            margin: 0;
+            margin-bottom: 10px;
+        }
+        #leaderboard ol {
+            padding-left: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Amaan Escapes Raccoon</h1>
-    <div id="instructions">Drag the raccoon to chase Amaan. Select the ghee level below. The higher the ghee level, the faster Amaan moves. Catch Amaan as fast as you can! The faster you catch Amaan, the more points you get!</div>
+    <div id="instructions">Drag the raccoon to chase Amaan. The faster you catch Amaan, the more points you get! Enter your name to start the game:</div>
     <div>
-        <label for="ghee">Select Ghee Level:</label>
-        <input type="number" id="gheeInput" min="1" max="25" value="10">
+        <label for="playerName">Your Name:</label>
+        <input type="text" id="playerName">
         <button id="startButton">Start Game</button>
     </div>
-    <div id="timer">Time left: 15s</div>
-    <div id="highScore">All-time High Score: 0</div>
+    <div id="timer">Time left: 15000ms</div>
     <div id="score">Points: 0</div>
-    <div id="gameBox">
-        <img src="amaan.png" id="amaan" class="character" alt="Amaan">
-        <img src="raccoon.png" id="raccoon" class="character" alt="Raccoon">
+    <div id="gameContainer">
+        <div id="gameBox">
+            <img src="amaan.png" id="amaan" class="character" alt="Amaan">
+            <img src="raccoon.png" id="raccoon" class="character" alt="Raccoon">
+        </div>
+        <div id="leaderboard">
+            <h2>Top 10 Players</h2>
+            <ol id="leaderboardList"></ol>
+        </div>
     </div>
     <div id="message"></div>
     <script>
@@ -59,18 +76,20 @@
         const amaan = document.getElementById('amaan');
         const raccoon = document.getElementById('raccoon');
         const timer = document.getElementById('timer');
-        const highScoreDisplay = document.getElementById('highScore');
         const message = document.getElementById('message');
         const scoreDisplay = document.getElementById('score');
-        const gheeInput = document.getElementById('gheeInput');
         const startButton = document.getElementById('startButton');
+        const playerNameInput = document.getElementById('playerName');
+        const leaderboardList = document.getElementById('leaderboardList');
 
-        let timeLeft = 15;
+        let timeLeft = 15000;
         let gameRunning = false;
-        let amaanSpeed = 100;
+        const amaanSpeed = 3000;
         let score = 0;
-        let highScore = localStorage.getItem('highScore') || 0;
-        highScoreDisplay.textContent = `All-time High Score: ${highScore}`;
+        let playerName = '';
+
+        let highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+        updateLeaderboard();
 
         amaan.style.left = '375px';
         amaan.style.top = '275px';
@@ -160,23 +179,18 @@
                 clearInterval(amaanInterval);
                 clearInterval(timerInterval);
                 message.textContent = 'Caught!';
-                let gheeLevel = parseInt(gheeInput.value);
-                timeTaken = 15 - timeLeft;
-                score = Math.max(0, (15 - timeTaken) * gheeLevel * 100);
+                timeTaken = 15000 - timeLeft;
+                score = Math.max(0, (15000 - timeTaken) * 10);
                 scoreDisplay.textContent = `Points: ${score}`;
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem('highScore', highScore);
-                    highScoreDisplay.textContent = `All-time High Score: ${highScore}`;
-                }
+                updateHighScores(playerName, score);
             }
         }
 
         function updateTimer() {
             if (!gameRunning) return;
 
-            timeLeft--;
-            timer.textContent = `Time left: ${timeLeft}s`;
+            timeLeft -= 10;
+            timer.textContent = `Time left: ${timeLeft}ms`;
             if (timeLeft <= 0) {
                 gameRunning = false;
                 clearInterval(amaanInterval);
@@ -186,10 +200,15 @@
         }
 
         function startGame() {
-            timeLeft = 15;
+            playerName = playerNameInput.value.trim();
+            if (playerName === '') {
+                alert('Please enter your name to start the game.');
+                return;
+            }
+
+            timeLeft = 15000;
             gameRunning = true;
-            amaanSpeed = parseInt(gheeInput.value) * 100;
-            timer.textContent = `Time left: 15s`;
+            timer.textContent = `Time left: 15000ms`;
             message.textContent = '';
             scoreDisplay.textContent = 'Points: 0';
             amaan.style.left = '375px';
@@ -201,8 +220,20 @@
             raccoonX = parseInt(raccoon.style.left);
             raccoonY = parseInt(raccoon.style.top);
 
-            amaanInterval = setInterval(moveAmaan, 20);
-            timerInterval = setInterval(updateTimer, 1000);
+            amaanInterval = setInterval(moveAmaan, 10);
+            timerInterval = setInterval(updateTimer, 10);
+        }
+
+        function updateHighScores(name, score) {
+            highScores.push({ name, score });
+            highScores.sort((a, b) => b.score - a.score);
+            highScores = highScores.slice(0, 10);
+            localStorage.setItem('highScores', JSON.stringify(highScores));
+            updateLeaderboard();
+        }
+
+        function updateLeaderboard() {
+            leaderboardList.innerHTML = highScores.map(entry => `<li>${entry.name}: ${entry.score}</li>`).join('');
         }
 
         startButton.addEventListener('click', startGame);
